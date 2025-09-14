@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 
-import { Body, Controller, Patch, Post, Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, Patch, Post, Put, Req, UseGuards } from "@nestjs/common";
 import { UserDto, UserService } from "./user.service";
 import { ApiOperation, ApiProperty, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "src/common/guards/jwt-auth.guard";
@@ -50,7 +50,7 @@ export class UserController{
         return this.userService.registerUser(userDto.email, userDto.name, userDto.password);
     }
 
-    @Patch('profile')
+    @Put('profile')
     @UseGuards(JwtAuthGuard)
     @ApiOperation({ summary: 'Actualizar perfil de usuario' })
     @ApiResponse({ status: 200, description: 'Perfil actualizado exitosamente' })
