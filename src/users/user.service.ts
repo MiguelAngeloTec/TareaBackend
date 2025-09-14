@@ -1,8 +1,9 @@
 /* eslint-disable prettier/prettier */
 
-import { Injectable, UnauthorizedException } from "@nestjs/common";
+import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { User, UserRepository } from "./user.repository";
 import { sha256 } from "src/util/crypto/hash.util";
+import { UpdateUserDto } from "./user.controller";
 
 export type UserDto={
     email: string;
@@ -30,6 +31,39 @@ export class UserService {
 
     async findById(id:number):Promise<User>{
         return this.userRepository.findById(id);
+    }
+
+    async updateUser(userId: number, updateData: UpdateUserDto): Promise<UserDto> {
+        const existingUser = await this.userRepository.findById(userId);
+        if (!existingUser) {
+            throw new NotFoundException('Usuario no encontrado');
+        }
+
+        // Validar email solo si se está actualizando
+        if (updateData.email && updateData.email !== existingUser.email) {
+            const emailExists = await this.userRepository.findByEmail(updateData.email);
+            if (emailExists) {
+                throw new ConflictException('El email ya está en uso');
+            }
+        }
+
+        // Hashear la nueva contraseña si se proporciona
+        let hashedPassword: string | undefined;
+        if (updateData.password) {
+            hashedPassword = sha256(updateData.password);
+        }
+
+        // Actualizar usuario (incluyendo contraseña si se proporciona)
+        const updatedUser = await this.userRepository.updateUser(userId, {
+            name: updateData.name,
+            email: updateData.email,
+            password_hash: hashedPassword
+        });
+        
+        return {
+            email: updatedUser.email,
+            name: updatedUser.name
+        };
     }
 
 }
