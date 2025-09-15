@@ -86,6 +86,12 @@ export class UserRepository{
         const [rows] = await this.dbService.getPool().query(sql);
         return rows as User[];
     }
+    async findAll(): Promise<User[]> {
+        const sql='SELECT email, name FROM users ORDER BY id ASC'
+        const [rows]= await this.dbService.getPool().query(sql);
+        return rows as User[];
+    }
+
 }
 
 

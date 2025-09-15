@@ -73,5 +73,9 @@ export class UserService {
             name: user.name
         }));
     }
+    async listAllUsers(): Promise<UserDto[]> {
+        return this.userRepository.findAll();
+    }
+
 }
 

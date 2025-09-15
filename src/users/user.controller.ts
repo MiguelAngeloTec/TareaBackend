@@ -6,6 +6,20 @@ import { ApiOperation, ApiProperty, ApiResponse, ApiTags } from "@nestjs/swagger
 import { JwtAuthGuard } from "src/common/guards/jwt-auth.guard";
 import * as authenticatedRequest from "src/common/interfaces/authenticated-request";
 
+@ApiTags("Admin - Usuarios")
+@Controller("admin/users")
+
+export class AdminUserController {
+  constructor(private readonly userService: UserService) {}
+
+  @Get("list")
+  @ApiResponse({ status: 200, description: "Lista de usuarios registrados" })
+  async listUsers(): Promise<UserDto[]> {
+    return this.userService.listAllUsers();
+  }
+}
+
+
 export class CreateUserDto{
     @ApiProperty({example:"user@example.com", description:"Email del usuario"})
     email: string;
