@@ -66,4 +66,12 @@ export class UserService {
         };
     }
 
+    async searchUsers(email?: string, name?: string): Promise<UserDto[]> {
+        const users = await this.userRepository.searchUsers(email, name);
+        return users.map(user => ({
+            email: user.email,
+            name: user.name
+        }));
+    }
 }
+

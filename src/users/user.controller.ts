@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 
-import { Body, Controller, Patch, Post, Put, Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Patch, Post, Put, Req, UseGuards } from "@nestjs/common";
 import { UserDto, UserService } from "./user.service";
 import { ApiOperation, ApiProperty, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "src/common/guards/jwt-auth.guard";
@@ -14,6 +14,15 @@ export class CreateUserDto{
     @ApiProperty({example:"password123", description:"Contraseña del usuario"})
     password: string;
 }
+export class SearchUserDto{
+    @ApiProperty({example:"1", description:"ID del usuario"})
+    id: number;
+    @ApiProperty({example:"usuario1", description:"Nombre del usuario"})
+    name: string;
+    @ApiProperty({example:"s", description:"Email del usuario"})
+    email: string;
+} 
+
 
 export class UpdateUserDto {
   @ApiProperty({ 
@@ -61,6 +70,14 @@ export class UserController{
         @Req() req: authenticatedRequest.AuthenticatedRequest
     ): Promise<UserDto> {
         return this.userService.updateUser(parseInt(req.user.userId), updateData);
+    }
+    @Get('search')
+    @UseGuards(JwtAuthGuard)
+    @ApiOperation({ summary: 'Search users by email or name' })
+    @ApiResponse({ status: 200, description: 'Users found successfully' })
+    @ApiResponse({ status: 401, description: 'Unauthorized' })
+    async searchUsers(@Body() searchDto: SearchUserDto): Promise<UserDto[]> {
+        return this.userService.searchUsers(searchDto.email, searchDto.name);
     }
 
 }

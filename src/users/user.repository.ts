@@ -75,6 +75,17 @@ export class UserRepository{
         
         return this.findById(userId);
     }
+    async searchUsers(email?: string, name?: string): Promise<User[]> {
+        let sql = 'SELECT * FROM users WHERE 1=1';
+        if (email) {
+            sql += ` AND email LIKE '%${email}%'`;
+        }
+        if (name) {
+            sql += ` AND name LIKE '%${name}%'`;
+        }
+        const [rows] = await this.dbService.getPool().query(sql);
+        return rows as User[];
+    }
 }
 
 
